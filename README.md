@@ -1,2 +1,25 @@
 # bilbot
-This is a project to scape cars from bilbasen and rank them based on the parameters the user specifies
+
+A starter scraper for listing cars from [Bilbasen](https://www.bilbasen.dk/).
+
+## What it does now
+
+- Lets you pass Bilbasen search filters as query params.
+- Fetches the search result page.
+- Parses and prints listings (title, price, location, URL).
+
+## Usage
+
+Pass one or more `--filter key=value` entries.
+
+```bash
+python scraper.py --filter pricefrom=100000 --filter priceto=250000 --filter fuel=diesel --limit 10
+```
+
+If Bilbasen supports those parameters, you'll get a numbered list of matching cars.
+
+## Run tests
+
+```bash
+python -m pytest -q
+```
