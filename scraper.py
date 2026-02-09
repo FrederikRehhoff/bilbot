@@ -37,19 +37,19 @@ class BilbasenScraper:
     def __init__(self, timeout: int = 30) -> None:
         self.timeout = timeout
 
-    def search(self, filters: dict[str, str], limit: int = 20) -> list[CarListing]:
+    def search(self, filters: dict[str, str]) -> list[CarListing]:
         query = urlencode(filters)
         url = f"{BASE_URL}?{query}" if query else BASE_URL
         request = Request(url=url, headers={"User-Agent": USER_AGENT})
         with urlopen(request, timeout=self.timeout) as response:
             html = response.read().decode("utf-8", errors="replace")
-        return self._parse_listings(html, limit=limit)
+        return self._parse_listings(html)
 
-    def _parse_listings(self, html: str, limit: int = 20) -> list[CarListing]:
+    def _parse_listings(self, html: str) -> list[CarListing]:
         listings = self._parse_json_ld(html)
         if not listings:
             listings = self._parse_card_links(html)
-        return listings[:limit]
+        return listings
 
     def _parse_json_ld(self, html: str) -> list[CarListing]:
         listings: list[CarListing] = []
@@ -145,7 +145,6 @@ def build_parser() -> argparse.ArgumentParser:
         default=[],
         help="Search filter in key=value format. Can be repeated.",
     )
-    parser.add_argument("--limit", type=int, default=20, help="Maximum number of results to print.")
     return parser
 
 
@@ -160,7 +159,7 @@ def main() -> None:
 
     scraper = BilbasenScraper()
     try:
-        results = scraper.search(filters=filters, limit=args.limit)
+        results = scraper.search(filters=filters)
     except URLError as exc:
         parser.exit(status=1, message=f"Failed to fetch Bilbasen: {exc}\n")
 
